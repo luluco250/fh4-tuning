@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en-us">
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<title>FH4 Tuning Assistant</title>
+	<link rel="stylesheet" href="reset.css">
+	<link rel="stylesheet" href="main.css">
+</head>
+<body>
+	<header id="page-header">
+		<nav id="page-navbar">
+			<h1 id="page-title">FH4 Tuning Assistant</h1>
+		</nav>
+	</header>
+	<main id="page-content">
+		<my-slider
+			id="slider-front"
+			label="Front"
+			step="0.01"
+			min="0"
+			max="1"
+			fixed-range
+		></my-slider>
+		<my-slider
+			id="slider-stiffness-bias"
+			label="Stiffness Bias"
+			step="0.01"
+			min="-1"
+			max="1"
+			fixed-range
+		></my-slider>
+		<my-slider
+			id="slider-antiroll-bars"
+			label="Front Antiroll Bars"
+			step="0.01"
+			min="1"
+			max="65"
+			fixed-value
+		></my-slider>
+		<my-slider
+			id="slider-antiroll-bars-rear"
+			label="Rear Antiroll Bars"
+			step="0.01"
+			min="1"
+			max="65"
+			fixed-value
+		></my-slider>
+		<my-slider
+			id="slider-spring-stiffness"
+			label="Front Spring Stiffness"
+			step="0.01"
+			min="0"
+			max="0"
+			fixed-value
+		></my-slider>
+		<my-slider
+			id="slider-spring-stiffness-rear"
+			label="Rear Spring Stiffness"
+			step="0.01"
+			min="0"
+			max="0"
+			fixed-value
+		></my-slider>
+		<my-slider
+			id="slider-rebound-stiffness"
+			label="Front Rebound Stiffness"
+			step="0.01"
+			min="3"
+			max="20"
+			fixed-value
+		></my-slider>
+		<my-slider
+			id="slider-rebound-stiffness-rear"
+			label="Rear Rebound Stiffness"
+			step="0.01"
+			min="3"
+			max="20"
+			fixed-value
+		></my-slider>
+		<my-slider
+			id="slider-bump-stiffness"
+			label="Front Bump Stiffness"
+			step="0.01"
+			min="0"
+			max="0"
+			readonly
+		></my-slider>
+		<my-slider
+			id="slider-bump-stiffness-rear"
+			label="Rear Bump Stiffness"
+			step="0.01"
+			min="0"
+			max="0"
+			readonly
+		></my-slider>
+	</main>
+	<footer id="page-footer">
+		<div id="page-footer-content">
+			<p>2019 - Lucas Melo</p>
+		</div>
+	</footer>
+	<script src="elements/my-slider.js"></script>
+	<script src="main.js"></script>
+</body>
+</html>
