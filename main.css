@@ -29,6 +29,17 @@ body {
 
 #page-content {
 	flex-grow: 1;
+	display: flex;
+	flex-flow: column nowrap;
+	justify-content: center;
+	align-items: center;
+}
+
+#sliders {
+	display: flex;
+	flex-flow: row wrap;
+	justify-content: center;
+	align-items: flex-start;
 }
 
 #page-footer {

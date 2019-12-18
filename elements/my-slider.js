@@ -51,74 +51,28 @@ class MySlider extends HTMLElement {
 		shadow.appendChild(style);
 		shadow.appendChild(container);
 
-		const clamp = (x, min, max) => Math.max(min, Math.min(max, x));
-		const validate = (target) => {
-			const value = parseFloat(target.value);
-			//const min = parseFloat(target.min);
-			//const max = parseFloat(target.max);
-
-			return (
-				!(isNaN(value) || isNaN(min) || isNaN(max)) //&&
-				//value >= min && value <= max
-			);
-		};
-
-		const inputEvent = new InputEvent("input", {
-			view: window,
-			bubbles: true,
-			cancelable: true
-		});
-
 		range.addEventListener("input", e => {
-			if (range.readOnly) {
-				e.preventDefault();
-				range.value = this.value;
-				return;
-			}
-
-			value.value = e.target.value;
+			e.preventDefault();
 			this.value = e.target.value;
-
-			this.dispatchEvent(inputEvent);
+			this._onInput();
 		});
 
 		min.addEventListener("input", e => {
-			if (validate(e.target)) {
-				e.preventDefault();
-				min.value = this.min;
-				return;
-			}
-
-			range.min = e.target.value;
-			value.min = e.target.value;
-			
-			value.value = clamp(value.value, value.min, value.max);
+			e.preventDefault();
+			this.min = e.target.value;
+			this._onInput();
 		});
 
 		value.addEventListener("input", e => {
-			if (validate(e.target)) {
-				e.preventDefault();
-				value.value = this.value;
-				return;
-			}
-
-			range.value = e.target.value;
+			e.preventDefault();
 			this.value = e.target.value;
-
-			this.dispatchEvent(inputEvent);
+			this._onInput();
 		});
 
 		max.addEventListener("input", e => {
-			if (validate(e.target)) {
-				e.preventDefault();
-				max.value = this.max;
-				return;
-			}
-
-			range.max = e.target.value;
-			value.max = e.target.value;
-
-			value.value = clamp(value.value, value.min, value.max);
+			e.preventDefault();
+			this.max = e.target.value;
+			this._onInput();
 		});
 
 		this.labelDiv = label;
@@ -127,9 +81,46 @@ class MySlider extends HTMLElement {
 		this.valueInput = value;
 		this.maxInput = max;
 
-		this.value = range.value;
-		this.readOnly = this.readOnly;
-		this.fixedRange = this.fixedRange;
+		this._applyAttributes();
+	}
+
+	_onInput() {
+		this.dispatchEvent(new InputEvent("input", {
+			view: window,
+			bubbles: true,
+			cancelable: true
+		}));
+	}
+
+	_applyAttributes() {
+		this.labelDiv.innerText = this.label;
+		
+		this.minInput.value = this.min;
+		this.maxInput.value = this.max;
+
+		this.rangeInput.min = this.valueInput.min = this.min;
+		this.rangeInput.max = this.valueInput.max = this.max;
+		this.rangeInput.value = this.valueInput.value = this.value;
+
+		this.rangeInput.step =
+			this.minInput.step =
+				this.valueInput.step =
+					this.maxInput.step = this.step;
+
+		const fixedRange = this.readOnly || this.fixedRange;
+		this.minInput.readOnly = this.maxInput.readOnly = fixedRange;
+		this.minInput.type = this.maxInput.type =
+			fixedRange ? "text" : "number";
+
+		const fixedValue = this.readOnly || this.fixedValue;
+		this.rangeInput.readOnly = this.valueInput.readOnly = fixedValue;
+		this.valueInput.type = fixedValue ? "text" : "number";
+	}
+
+	get _defaultValue() {
+		return (this.max < this.min)
+			? this.min
+			: this.min + (this.max - this.min) * 0.5;
 	}
 
 	get label() {
@@ -137,48 +128,43 @@ class MySlider extends HTMLElement {
 	}
 	set label(text) {
 		this.setAttribute("label", text);
-
-		this.labelDiv.innerText = text;
+		this._applyAttributes();
 	}
 
 	get min() {
-		return parseFloat(this.getAttribute("min") || "");
+		const value = parseFloat(this.getAttribute("min") || "");
+		return isNaN(value) ? 0 : value;
 	}
 	set min(value) {
 		this.setAttribute("min", value);
-
-		this.minInput.value = value;
+		this._applyAttributes();
 	}
 
 	get max() {
-		return parseFloat(this.getAttribute("max") || "");
+		const value = parseFloat(this.getAttribute("max") || "");
+		return isNaN(value) ? 1 : value;
 	}
 	set max(value) {
 		this.setAttribute("max", value);
-
-		this.maxInput.value = value;
+		this._applyAttributes();
 	}
 
 	get step() {
-		return parseFloat(this.getAttribute("step") || "");
+		const value = parseFloat(this.getAttribute("step") || "");
+		return isNaN(value) ? 0.01 : value;
 	}
 	set step(value) {
 		this.setAttribute("step", value);
-		
-		this.rangeInput.step = value;
-		this.minInput.step = value;
-		this.valueInput.step = value;
-		this.maxInput.step = value;
+		this._applyAttributes();
 	}
 
 	get value() {
-		return parseFloat(this.getAttribute("value") || "");
+		const value = parseFloat(this.getAttribute("value") || "");
+		return isNaN(value) ? this._defaultValue : value;
 	}
 	set value(value) {
 		this.setAttribute("value", value);
-
-		this.valueInput.value = value;
-		this.rangeInput.value = value;
+		this._applyAttributes();
 	}
 
 	get fixedRange() {
@@ -193,14 +179,7 @@ class MySlider extends HTMLElement {
 	}
 	set fixedRange(isFixed) {
 		this.setAttribute("fixed-range", isFixed);
-
-		isFixed = isFixed || this.readOnly;
-
-		this.minInput.readOnly = isFixed;
-		this.minInput.type = isFixed ? "text" : "number";
-		
-		this.maxInput.readOnly = isFixed;
-		this.maxInput.type = isFixed ? "text" : "number";
+		this._applyAttributes();
 	}
 
 	get fixedValue() {
@@ -215,13 +194,7 @@ class MySlider extends HTMLElement {
 	}
 	set fixedValue(isFixed) {
 		this.setAttribute("fixed-value", isFixed);
-
-		isFixed = isFixed || this.readOnly;
-
-		this.rangeInput.readOnly = isFixed;
-		
-		this.valueInput.readOnly = isFixed;
-		this.valueInput.type = isFixed ? "text" : "number";
+		this._applyAttributes();
 	}
 
 	get readOnly() {
@@ -236,9 +209,7 @@ class MySlider extends HTMLElement {
 	}
 	set readOnly(isReadOnly) {
 		this.setAttribute("readonly", isReadOnly);
-
-		this.fixedValue = this.fixedValue;
-		this.fixedRange = this.fixedRange;
+		this._applyAttributes();
 	}
 }
 

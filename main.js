@@ -25,8 +25,8 @@ const params = {
 }; 
 
 function main() {
-	params.front.addEventListener("input", updateValues);
-	params.stiffnessBias.addEventListener("input", updateValues);
+	for (const elem in params)
+		params[elem].addEventListener("input", updateValues);
 
 	updateValues();
 }
@@ -42,7 +42,7 @@ function updateValues() {
 	const bias = params.stiffnessBias.value;
 
 	const apply = (param, weight, bias = 0) =>
-		param.value = calculate(bias, param.min, param.max, weight);
+		param.value = calculate(param.min, param.max, weight, bias);
 	
 	apply(params.antirollBars, front);
 	apply(params.antirollBarsRear, rear);
@@ -65,7 +65,7 @@ function updateValues() {
  * @param {Number} weight Car weight distribution.
  * @returns {Number} The resulting value.
  */
-function calculate(bias, min, max, weight) {
+function calculate(min, max, weight, bias) {
 	let value = lerp(min, max, weight);
 
 	if (bias > 0)
